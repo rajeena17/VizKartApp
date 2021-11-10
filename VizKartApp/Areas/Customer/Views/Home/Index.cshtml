@@ -1,0 +1,55 @@
+﻿@model IEnumerable<VizKartApp.Models.Product>
+@*<input type="text" name="search" />
+        <input type="button" value="search" name="name" />
+        <a asp-action="Search" class="btn btn-primary form-control" asp-route-id="str">searchclk</a>
+
+    <div class="olContent f1"><h2 style="color:black"></h2></div>
+    <form method="post">
+        <div class="olSearch fr">
+            <input type="text" name="search" placeholder="Search" class="inputComn form-control" />
+            <div class="searchIcon">
+                <button type="submit" class="searchBtn">
+                    <img src="~/Areas/Customer/Images/searchIcon.png" />
+                </button>
+            </div>
+        </div>
+    </form>
+*@
+
+<div class="olContent f1"><h2 style="color:black"></h2></div>
+@using (Html.BeginForm("Search", "Home", FormMethod.Get))
+{
+<p>
+    <input type="text" name="search" placeholder="Search" width="100" />
+    <input type="submit" value="Search" style="background-color:deepskyblue" name="submit" />
+</p>}
+
+<div class="row pb-3 backgroundWhite">
+
+    @foreach (var product in Model)
+    {
+<div class="col-lg-3 col-md-6">
+    <div class="row p-2">
+        <div class="col-12  p-1" style="border:1px solid #008cba; border-radius: 5px;">
+            <div class="card" style="border:0px;">
+                <img src="@product.ImageUrl" width="10" height="310" class="card-img-top rounded" />
+                <div class="pl-1">
+                    <p class="card-title h5"><centre><b style="color:#2c3e50; font-style:italic">@product.Title</b></centre></p>
+                    <p class="card-title text-primary">by <b>@product.Author</b></p>
+                </div>
+                <div style="padding-left:5px;">
+                    <p>List Price: <strike><b class="">₹@product.ListPrice.ToString("0.00")</b></strike></p>
+                </div>
+                <div style="padding-left:5px;">
+                    <p style="color:maroon">As low as: <b class="">₹@product.Price100.ToString("0.00")</b></p>
+                </div>
+            </div>
+            <div>
+                <a asp-action="Details" class="btn btn-primary form-control" asp-route-id="@product.Id">Details</a>
+            </div>
+        </div>
+    </div>
+</div>}
+
+</div>
+
