@@ -26,10 +26,7 @@ namespace VizKartApp.Areas.Customer.Controllers
             _logger = logger;
             _unitOfWork = unitOfWork;
         }
-
-
-
-        
+   
         public IActionResult Index()
         {
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(includeProperties: "Category,CoverType");
@@ -45,7 +42,6 @@ namespace VizKartApp.Areas.Customer.Controllers
 
                 HttpContext.Session.SetInt32(SD.ssShoppingCart, count);
             }
-
 
             return View(productList);
         }

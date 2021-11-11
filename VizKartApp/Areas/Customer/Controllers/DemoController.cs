@@ -11,8 +11,6 @@ namespace VizKartApp.Areas.Customer.Controllers
     {
         public string Index()
         {
-
-
             return "Hello world";
         }
     }
