@@ -50,7 +50,7 @@ namespace VizKartApp.Areas.Admin.Controllers
             if (result.Target.ProcessorResponseText == "Approved")
             {
                 TempData["Success"] = "Transaction was successful Transaction ID "
-                                + result.Target.Id + ", Amount Charged : $" + result.Target.Amount;
+                                + result.Target.Id + ", Amount Charged : ₹" + result.Target.Amount;
             }
             return RedirectToAction("Index");
         }

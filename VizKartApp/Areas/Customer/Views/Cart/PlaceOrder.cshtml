@@ -1,32 +1,70 @@
 ﻿@model VizKartApp.Models.ViewModels.ShoppingCartVM
-    <!DOCTYPE html>
 
-    <html>
-    <body>
-        <br />
+
+
+@{ Layout = null; }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" />
+</head>
+<body>
+    <div>
         <h5>Payment Mode </h5>
-        <br />
-        <label>Enter Account Number</label>
-        <input type="text" name="AccNo" value=" " id="num" onchange="getval()" />
-        <br />
-        <strong class="text-info">Total Amount ₹@(Model.OrderHeader.OrderTotal)</strong>
-        <br />
-        
-        <script type="text/javascript">
-            var acc;
-            var amt = @Model.OrderHeader.OrderTotal;
-            function getval() {
-                acc = document.getElementById("num").value;
+        <section>
+            @using (Html.BeginForm("PaymentInfo", "Cart"))
+            {
+<input type="text" name="acc" />
+                <br />
+                                <strong class="text-info">Total Amount is ₹@(Model.OrderHeader.OrderTotal)</strong>
+                                                <input type="text" name="amt" value="@Model.OrderHeader.OrderTotal" hidden />
 
-            }
-            function Apicall() {
-                var url = "https://localhost:44307/Home?accno=" + acc +"&amount="+amt;
-                window.location = url;
-            }
-
-        </script>
-        <input type="button" value="Pay" id="btnpay" name="payment" class="btn btn-success" onclick="Apicall()" />
-
-
-    </body>
+                                                                @foreach (var item in Model.ListCart)
+                                                                {@*@item.Id*@
+                                                                                    <input type="text" name="id" value="@item.Id" hidden />}
+                                                                                <br />
+                                                                                                <br />
+                                                                                                                <input type="submit" value="Pay" />}
+        </section>
+    </div>
+</body>
 </html>
+
+@*<html>
+        <body>
+            <br />
+
+            <br />
+            <label>Enter Account Number</label>
+            <input type="text" name="AccNo" value=" " id="num" onchange="getval()" />
+            <br />
+            <strong class="text-info">Total Amount ₹@(Model.OrderHeader.OrderTotal)</strong>
+            <br />
+
+            <script type="text/javascript">
+                var acc;
+                var amt = @Model.OrderHeader.OrderTotal;
+                function getval() {
+                    acc = document.getElementById("num").value;
+
+                }
+                //function Apicall() {
+                //    var url = "https://localhost:44307/Home?accno=" + acc +"&amount="+amt;
+                //    window.location = url;
+                }
+
+            </script>
+
+            <input type="button" value="Pay" id="btnpay" name="payment" class="btn btn-success" onclick="Apicall()" />
+
+
+            <div>
+                <a asp-area="Customer" asp-controller="Cart" asp-action="PaymentInfo" asp-route-acc="" asp-route-amt="@Model.OrderHeader.OrderTotal" class="btn btn-primary">Pay here..</a>
+            </div>
+
+        </body>
+    </html>*@
+@section Scripts{
+
+    <script src="~/js/order.js"></script>
+}

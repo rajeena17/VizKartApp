@@ -4,6 +4,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using VizKartApp.DataAccess.Repository.IRepository;
 using VizKartApp.Models;
@@ -19,6 +22,7 @@ using Stripe;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 
+
 namespace VizKartApp.Areas.Customer.Controllers
 {
     [Area("Customer")]
@@ -32,6 +36,7 @@ namespace VizKartApp.Areas.Customer.Controllers
 
         [BindProperty]
         public ShoppingCartVM ShoppingCartVM { get; set; }
+        public OrderDetailsVM OrderVM { get; set; }
 
         public CartController(IUnitOfWork unitOfWork, IEmailSender emailSender, 
             UserManager<IdentityUser> userManager, IOptions<TwilioSettings> twilionOptions)
@@ -317,6 +322,107 @@ namespace VizKartApp.Areas.Customer.Controllers
             ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
 
             return View(ShoppingCartVM);
+        }
+
+       
+        public async Task<ActionResult> PaymentInfo(int acc,float amt,int id)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+
+            IEnumerable<OrderHeader> orderHeaderList;
+
+            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+            {
+                orderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+            }
+            else
+            {
+                orderHeaderList = _unitOfWork.OrderHeader.GetAll(
+                                        u => u.ApplicationUserId == claim.Value,
+                                        includeProperties: "ApplicationUser");
+
+            }
+            string Baseurl = "https://localhost:44307/";
+            //List<Employee> msg = new List<Employee>();
+            using (var client = new HttpClient())
+            {
+            String msg="";
+                //Passing service base url
+                client.BaseAddress = new Uri(Baseurl);
+                client.DefaultRequestHeaders.Clear();
+                //Define request data format
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                //Sending request to find web api REST service resource GetAllEmployees using HttpClient
+                HttpResponseMessage Res = await client.GetAsync("Home?accno="+acc+"&amount="+amt);
+                //Checking the response is successful or not which is sent using HttpClient
+                if (Res.IsSuccessStatusCode)
+                {
+                    //Storing the response details recieved from web api
+                    var Response = Res.Content.ReadAsStringAsync().Result;
+                    //Deserializing the response recieved from web api and storing into the Employee list
+                    msg = (string)JsonConvert.DeserializeObject(Response);
+                }
+                //returning the employee list to view
+               // return View(msg);
+                switch(msg)
+                {
+                    case "Successful":
+                        {
+
+                            //OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+                            //orderHeader.OrderStatus = SD.StatusApproved;
+                            //_unitOfWork.Save();
+
+                            var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault
+                            (c => c.Id == id, includeProperties: "Product");
+
+                            var cnt = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+                            _unitOfWork.ShoppingCart.Remove(cart);
+                            _unitOfWork.Save();
+                            HttpContext.Session.SetInt32(SD.ssShoppingCart, 0);
+
+                           
+                           
+                            return View("OrderConfirmation");
+                        }
+                                   //   break;
+                    case "Failed": return View("TransactionError");
+                      //  break;
+
+                }
+
+                return Json(new { data = orderHeaderList });
+
+
+              //  return View(msg);
+            }
+        }
+
+
+        [HttpGet]
+        public IActionResult StartProcessing(int id)
+        {
+
+
+            IEnumerable<OrderHeader> orderHeaderList;
+            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
+            {
+                orderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
+            }
+            else
+            {
+                orderHeaderList = _unitOfWork.OrderHeader.GetAll(
+                                        u => u.Id == id,
+                                        includeProperties: "ApplicationUser");
+            }
+            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
+            orderHeader.PaymentStatus = SD.PaymentStatusApproved;
+            orderHeader.OrderStatus = SD.StatusInProcess;
+            _unitOfWork.Save();
+            return Json(new { data = orderHeaderList });
+            //return RedirectToAction("Index");
         }
     }
 }
