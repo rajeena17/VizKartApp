@@ -110,6 +110,7 @@ namespace VizKartApp.Areas.Customer.Controllers
 
         public IActionResult Plus(int cartId)
         {
+
             var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault
                             (c => c.Id == cartId, includeProperties: "Product");
             cart.Count += 1;
@@ -176,6 +177,7 @@ namespace VizKartApp.Areas.Customer.Controllers
             {
                 list.Price = SD.GetPriceBasedOnQuantity(list.Count, list.Product.Price,
                                                     list.Product.Price50, list.Product.Price100);
+                if(list.Product.QuantityAvailable>0)
                 ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
             }
             ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
@@ -325,7 +327,7 @@ namespace VizKartApp.Areas.Customer.Controllers
         }
 
        
-        public async Task<ActionResult> PaymentInfo(int acc,string pswd,float amt,int id)
+        public async Task<ActionResult> PaymentInfo(int acc,string pswd,float amt,int id,int pdtid)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -380,6 +382,17 @@ namespace VizKartApp.Areas.Customer.Controllers
                             (c => c.Id == id, includeProperties: "Product");
 
                             var cnt = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+                            
+
+                            var count= cart.Count;
+                            cart.Product.QuantityAvailable -= count;
+
+
+                           
+                            
+
+                            
+
                             _unitOfWork.ShoppingCart.Remove(cart);
                             _unitOfWork.Save();
                             HttpContext.Session.SetInt32(SD.ssShoppingCart, 0);

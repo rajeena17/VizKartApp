@@ -38,6 +38,8 @@ namespace VizKartApp.DataAccess.Repository
                 objFromDb.CategoryId = product.CategoryId;
                 objFromDb.Author = product.Author;
                 objFromDb.CoverTypeId = product.CoverTypeId;
+                objFromDb.QuantityAvailable = product.QuantityAvailable;
+
                 
             }
         }

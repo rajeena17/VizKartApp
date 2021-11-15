@@ -4,7 +4,7 @@
     <br />
     @if (Model.ListCart.Count() > 0)
     {
-
+     
     <div class="backgroundWhiteBorder">
         <div class="container">
             <div class="card">
@@ -33,11 +33,25 @@
                                 <div class="col-4 text-md-right" style="padding-top:5px;">
                                     <h6><strong>₹@item.Price<span class="text-muted">x</span> @item.Count </strong></h6>
                                 </div>
+
+
+
                                 <div class="col-6 col-sm-4 col-lg-6">
                                     <div class="float-right mx-1">
+                                        @if(item.Product.QuantityAvailable>0)
+                    {
                                         <a asp-action="plus" asp-route-cartId="@item.Id" class="btn btn-primary">
                                             <i class="fas fa-plus"></i>
                                         </a>
+                    }
+                    else
+                    { 
+                                    <a class="btn btn-primary" style="opacity:0.3">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+
+                    }
+                                        
                                     </div>
                                     <div class="float-right mx-1">
                                         <a asp-action="minus" asp-route-cartId="@item.Id" class="btn btn-danger">

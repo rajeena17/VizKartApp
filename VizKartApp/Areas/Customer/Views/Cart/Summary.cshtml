@@ -88,6 +88,8 @@
                                 <ul class="list-group mb-3">
                                     @foreach (var details in Model.ListCart)
                                     {
+                                        if (details.Product.QuantityAvailable > 0)
+                                        {
                                         <li class="list-group-item d-flex justify-content-between">
                                             <div>
                                                 <h6 class="my-0">@details.Product.Title</h6>
@@ -95,6 +97,7 @@
                                             </div>
                                             <span class="text-muted">₹@(details.Price * details.Count) </span>
                                         </li>
+                                        }
                                     }
                                     <li class="list-group-item d-flex justify-content-between bg-light">
                                         <small class="text-info">Total (in rupees)</small>
@@ -141,10 +144,17 @@
 
                             *@
 
+                            @foreach (var details in Model.ListCart)
+                            {
+                                if (details.Product.QuantityAvailable > 0)
+                                {
+                        <div>
+                            <a asp-area="Customer" asp-controller="Cart" asp-action="PlaceOrder" class="btn btn-primary">Place Order..</a>
+                        </div>
+                    }
+                    
+                }
 
-                            <div>
-                                <a asp-area="Customer" asp-controller="Cart" asp-action="PlaceOrder"  class="btn btn-primary">Place Order..</a>
-                            </div>
 
                         </div>
                     </div>

@@ -32,16 +32,26 @@
     <div class="row p-2">
         <div class="col-12  p-1" style="border:1px solid #008cba; border-radius: 5px;">
             <div class="card" style="border:0px;">
-                <img src="@product.ImageUrl" width="10" height="310" class="card-img-top rounded" />
+                <img src="@product.ImageUrl" width="100" height="310" class="card-img-top rounded" />
                 <div class="pl-1">
-                    <p class="card-title h5"><centre><b style="color:#2c3e50; font-style:italic">@product.Title</b></centre></p>
-                    <p class="card-title text-primary">by <b>@product.Author</b></p>
+                    <h3 class="card-title h5"><centre><b style="color:#2c3e50; font-style:italic">@product.Title</b></centre></h3>
+                    <h5 class="card-title text-primary">by <b>@product.Author</b></h5>
                 </div>
                 <div style="padding-left:5px;">
-                    <p>List Price: <strike><b class="">₹@product.ListPrice.ToString("0.00")</b></strike></p>
-                </div>
-                <div style="padding-left:5px;">
-                    <p style="color:maroon">As low as: <b class="">₹@product.Price100.ToString("0.00")</b></p>
+                    <p>
+                        <strike><b class="">₹@product.ListPrice.ToString("0.00")</b></strike> &nbsp;
+                        <b class="">₹@product.Price100.ToString("0.00")</b>
+                    </p>
+                    @if (product.QuantityAvailable <= 0)
+                    {
+                        <h5 style="color:red">OUT OF STOCK</h5>
+                    }
+
+                else
+                {
+                <h6 class="">In Stock <b>@product.QuantityAvailable</b></h6>
+                }
+                
                 </div>
             </div>
             <div>

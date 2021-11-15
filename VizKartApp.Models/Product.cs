@@ -31,6 +31,10 @@ namespace VizKartApp.Models
         public double Price100 { get; set; }
         public string ImageUrl { get; set; }
 
+
+        [Range(0,int.MaxValue)]
+        public int QuantityAvailable { get; set; }
+
         [Required]
         public int CategoryId { get; set; }
         
