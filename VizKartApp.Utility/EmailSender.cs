@@ -24,7 +24,7 @@ namespace VizKartApp.Utility
         private Task Execute(string sendGridKEy, string subject,string message, string email)
         {
             var client = new SendGridClient(sendGridKEy);
-            var from = new EmailAddress("shrivatsahegde25@gmail.com", "VizKart");
+            var from = new EmailAddress("viharashettygs@gmail.com", "VizKart");
             var to = new EmailAddress(email, "End User");
             var msg = MailHelper.CreateSingleEmail(from, to, subject, "", message);
             return client.SendEmailAsync(msg);

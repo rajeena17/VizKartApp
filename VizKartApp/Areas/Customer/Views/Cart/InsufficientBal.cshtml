@@ -1,0 +1,58 @@
+﻿
+<div class="container row">
+    <div class="col-12 text-center">
+        <h1 class="text-primary text-center">Insufficient Balance</h1><br />
+        <img src="~/images/insuffAmt.jpg" width="50%" />
+    </div>
+    <div class="col-12 text-center" style="color:red">
+        <br /><b>
+    Your account has no sufficient amount to pay the bill</b>       
+    </div>
+    <div>
+        <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-primary">Back to Cart</a>
+    </div>
+</div>
+
+@*<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" />
+</head>
+<body>
+    <div class="container row">
+        <div class="col-12 text-center">
+            <h3 class="text-primary text-center">
+                Checkout
+            </h3>
+            <section>
+                @using (Html.BeginForm("PaymentInfo", "Cart"))
+                {
+                        <label>Enter Account Number</label>
+                        <input type="text" name="acc" /><br /><br />
+                        <label>Enter the Password</label>
+                        <input type="text" name="pswd" /><br /><br/>
+                        <strong class="text-info">Total Amount is ₹@(Model.OrderHeader.OrderTotal)</strong>
+                        <input type="text" name="amt" value="@Model.OrderHeader.OrderTotal" hidden />
+
+                      <img src="~/images/payment.png" width="25%" />
+                      @foreach (var item in Model.ListCart)
+                     {@*item.Id
+                       <input type="text" name="id" value="@item.Id" hidden />}<br /><br />
+                       <input type="submit" value="Pay" class="btn btn-success" />
+                     }
+                }
+            </section>
+       </div>
+        </div>                                                                                                    
+</body>
+</html>
+<div>
+     <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-primary">Back to Cart</a>
+ </div>
+                   
+
+@section Scripts{
+
+    <script src="~/js/order.js"></script>
+}
+*@

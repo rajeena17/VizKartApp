@@ -325,7 +325,7 @@ namespace VizKartApp.Areas.Customer.Controllers
         }
 
        
-        public async Task<ActionResult> PaymentInfo(int acc,float amt,int id)
+        public async Task<ActionResult> PaymentInfo(int acc,string pswd,float amt,int id)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -355,7 +355,7 @@ namespace VizKartApp.Areas.Customer.Controllers
                 //Define request data format
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 //Sending request to find web api REST service resource GetAllEmployees using HttpClient
-                HttpResponseMessage Res = await client.GetAsync("Home?accno="+acc+"&amount="+amt);
+                HttpResponseMessage Res = await client.GetAsync("Home?accno="+acc+"&pswd="+pswd+"&amount="+amt);
                 //Checking the response is successful or not which is sent using HttpClient
                 if (Res.IsSuccessStatusCode)
                 {
@@ -368,13 +368,14 @@ namespace VizKartApp.Areas.Customer.Controllers
                // return View(msg);
                 switch(msg)
                 {
+                    case "Incorrect Account Number":
+                        {
+                            return View();
+                        }
+                    case "pswdfail":
+                        return View();
                     case "Successful":
                         {
-
-                            //OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
-                            //orderHeader.OrderStatus = SD.StatusApproved;
-                            //_unitOfWork.Save();
-
                             var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault
                             (c => c.Id == id, includeProperties: "Product");
 
@@ -382,21 +383,19 @@ namespace VizKartApp.Areas.Customer.Controllers
                             _unitOfWork.ShoppingCart.Remove(cart);
                             _unitOfWork.Save();
                             HttpContext.Session.SetInt32(SD.ssShoppingCart, 0);
-
-                           
-                           
+   
                             return View("OrderConfirmation");
                         }
-                                   //   break;
                     case "Failed": return View("TransactionError");
-                      //  break;
+                    case "Insufficient Balance": return View("InsufficientBal");
+
 
                 }
 
-                return Json(new { data = orderHeaderList });
+                //return Json(new { data = orderHeaderList });
 
 
-              //  return View(msg);
+               return View(msg);
             }
         }
 

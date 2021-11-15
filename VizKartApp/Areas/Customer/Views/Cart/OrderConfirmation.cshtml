@@ -8,17 +8,17 @@
 <div class="container row">
     <div class="col-12 text-center">
         <h1 class="text-primary text-center">Order Submitted Successfully</h1><br />
-        <img src="~/images/lawn_leaf.jpg" width="50%" />
+        <img src="~/images/orderconfirm.png" width="50%" />
     </div>
     <div class="col-12 text-center" style="color:maroon">
         <br />
         Thank you for your order! <br />
         We have received your order and we will send a follow up email shortly!
         <br />
-        Your Order Number is : @Model
+        Your Order Number is : 2
     </div>
-    <div class="col-6 text-right">
-        <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-outline-info btn-sm">Back to Cart</a>
+    <div>
+        <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-primary">Back to Cart</a>
     </div>
     <div class="col-6 text-right">
         <a asp-area="Customer" asp-controller="Cart" asp-action="StartProcessing" asp-route-id="@Model" class="btn btn-outline-info btn-sm">ok</a>

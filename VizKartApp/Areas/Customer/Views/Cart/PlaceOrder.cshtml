@@ -1,70 +1,65 @@
 ﻿@model VizKartApp.Models.ViewModels.ShoppingCartVM
-
-
-
-@{ Layout = null; }
-<!DOCTYPE html>
-<html>
-<head>
-    <meta name="viewport" />
-</head>
-<body>
-    <div>
-        <h5>Payment Mode </h5>
-        <section>
-            @using (Html.BeginForm("PaymentInfo", "Cart"))
-            {
-<input type="text" name="acc" />
-                <br />
-                                <strong class="text-info">Total Amount is ₹@(Model.OrderHeader.OrderTotal)</strong>
-                                                <input type="text" name="amt" value="@Model.OrderHeader.OrderTotal" hidden />
-
-                                                                @foreach (var item in Model.ListCart)
-                                                                {@*@item.Id*@
-                                                                                    <input type="text" name="id" value="@item.Id" hidden />}
-                                                                                <br />
-                                                                                                <br />
-                                                                                                                <input type="submit" value="Pay" />}
-        </section>
-    </div>
-</body>
-</html>
-
-@*<html>
-        <body>
-            <br />
-
-            <br />
-            <label>Enter Account Number</label>
-            <input type="text" name="AccNo" value=" " id="num" onchange="getval()" />
-            <br />
-            <strong class="text-info">Total Amount ₹@(Model.OrderHeader.OrderTotal)</strong>
-            <br />
-
-            <script type="text/javascript">
-                var acc;
-                var amt = @Model.OrderHeader.OrderTotal;
-                function getval() {
-                    acc = document.getElementById("num").value;
-
-                }
-                //function Apicall() {
-                //    var url = "https://localhost:44307/Home?accno=" + acc +"&amount="+amt;
-                //    window.location = url;
-                }
-
-            </script>
-
-            <input type="button" value="Pay" id="btnpay" name="payment" class="btn btn-success" onclick="Apicall()" />
-
-
-            <div>
-                <a asp-area="Customer" asp-controller="Cart" asp-action="PaymentInfo" asp-route-acc="" asp-route-amt="@Model.OrderHeader.OrderTotal" class="btn btn-primary">Pay here..</a>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta name="viewport" />
+    </head>
+    <body>
+        <div class="backgroundWhiteBorder">
+            <div class="container">
+               
+    <div class="card">
+        <div class="card-header bg-dark text-light ml-0 row container">
+            <div class="col-6">
+                <i class="fa fa-shopping-cart"></i> &nbsp;
+                CheckOut
             </div>
+            <div class="col-6 text-right">
+                <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-outline-info btn-sm">Back to Cart</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="container rounded p-2">
+                <div class="row">
+                    <div class="col-12 col-lg-6 pb-4">
+                        <div class="row">
+                            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-info">Payment Details:</span>
+                            </h4>
+                        </div>
+                        <div class="row my-1">
+                            <div class="col-3">
+                                <label>Account Number</label><br/><br/>
+                                <label>Password</label>
+                            </div>
+                            <div class="col-9">
+                                 @using (Html.BeginForm("PaymentInfo", "Cart"))
+                                 {
+                                <input type="text" name="acc" class="form-control" /><br/>
+                                <input type="password" name="pswd" class="form-control" />
+                                <input type="text" name="amt" value="@Model.OrderHeader.OrderTotal" hidden />
+                                <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                    Total Amount is ₹@(Model.OrderHeader.OrderTotal)
+                                </h4>
+                                @foreach (var item in Model.ListCart)
+                                {
+                                  <input type="text" name="id" value="@item.Id" hidden />
+                                }<br /><br />
+                                <input type="submit" value="Pay" class="btn btn-primary" />
+                                 }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            </div>
+        </div>
+    </body>
+</html>
+        @section Scripts{
 
-        </body>
-    </html>*@
-@section Scripts{
+            <script src="~/js/order.js"></script>
+        }
 
-    <script src="~/js/order.js"></script>
-}
