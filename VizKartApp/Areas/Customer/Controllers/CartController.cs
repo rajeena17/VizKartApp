@@ -66,7 +66,9 @@ namespace VizKartApp.Areas.Customer.Controllers
             {
                 list.Price = SD.GetPriceBasedOnQuantity(list.Count, list.Product.Price,
                                                     list.Product.Price50, list.Product.Price100);
-                ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+                //if (list.Product.QuantityAvailable > 0)
+                    ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+
                 list.Product.Description = SD.ConvertToRawHtml(list.Product.Description);
                 if(list.Product.Description.Length>100)
                 {
@@ -314,7 +316,8 @@ namespace VizKartApp.Areas.Customer.Controllers
             {
                 list.Price = SD.GetPriceBasedOnQuantity(list.Count, list.Product.Price,
                                                     list.Product.Price50, list.Product.Price100);
-                ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+                if (list.Product.QuantityAvailable > 0)
+                    ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
             }
             ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
             ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
@@ -333,70 +336,106 @@ namespace VizKartApp.Areas.Customer.Controllers
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
 
-            IEnumerable<OrderHeader> orderHeaderList;
-
-            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
-            {
-                orderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
-            }
-            else
-            {
-                orderHeaderList = _unitOfWork.OrderHeader.GetAll(
-                                        u => u.ApplicationUserId == claim.Value,
-                                        includeProperties: "ApplicationUser");
-
-            }
+           
             string Baseurl = "https://localhost:44307/";
-            //List<Employee> msg = new List<Employee>();
             using (var client = new HttpClient())
             {
-            String msg="";
-                //Passing service base url
+                String msg = "";
+
                 client.BaseAddress = new Uri(Baseurl);
                 client.DefaultRequestHeaders.Clear();
-                //Define request data format
+
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                //Sending request to find web api REST service resource GetAllEmployees using HttpClient
-                HttpResponseMessage Res = await client.GetAsync("Home?accno="+acc+"&pswd="+pswd+"&amount="+amt);
-                //Checking the response is successful or not which is sent using HttpClient
+                //Sending request to find web api  using HttpClient
+                HttpResponseMessage Res = await client.GetAsync("Home?accno=" + acc + "&pswd=" + pswd + "&amount=" + amt);
+
                 if (Res.IsSuccessStatusCode)
                 {
-                    //Storing the response details recieved from web api
                     var Response = Res.Content.ReadAsStringAsync().Result;
-                    //Deserializing the response recieved from web api and storing into the Employee list
                     msg = (string)JsonConvert.DeserializeObject(Response);
                 }
-                //returning the employee list to view
-               // return View(msg);
-                switch(msg)
+                //Added at 10:02 on wednesday
+                claimsIdentity = (ClaimsIdentity)User.Identity;
+                claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+                ShoppingCartVM = new ShoppingCartVM()
+                {
+                    OrderHeader = new Models.OrderHeader(),
+                    ListCart = _unitOfWork.ShoppingCart.GetAll(c => c.ApplicationUserId == claim.Value,
+                                                                includeProperties: "Product")
+                };
+
+                ShoppingCartVM.OrderHeader.ApplicationUser = _unitOfWork.ApplicationUser
+                                                                .GetFirstOrDefault(c => c.Id == claim.Value,
+                                                                    includeProperties: "Company");
+
+                foreach (var list in ShoppingCartVM.ListCart)
+                {
+                    list.Price = SD.GetPriceBasedOnQuantity(list.Count, list.Product.Price,
+                                                        list.Product.Price50, list.Product.Price100);
+                    if (list.Product.QuantityAvailable > 0)
+                        ShoppingCartVM.OrderHeader.OrderTotal += (list.Price * list.Count);
+                }
+                ShoppingCartVM.OrderHeader.Name = ShoppingCartVM.OrderHeader.ApplicationUser.Name;
+                ShoppingCartVM.OrderHeader.PhoneNumber = ShoppingCartVM.OrderHeader.ApplicationUser.PhoneNumber;
+                ShoppingCartVM.OrderHeader.StreetAddress = ShoppingCartVM.OrderHeader.ApplicationUser.StreetAddress;
+                ShoppingCartVM.OrderHeader.City = ShoppingCartVM.OrderHeader.ApplicationUser.City;
+                ShoppingCartVM.OrderHeader.State = ShoppingCartVM.OrderHeader.ApplicationUser.State;
+                ShoppingCartVM.OrderHeader.PostalCode = ShoppingCartVM.OrderHeader.ApplicationUser.PostalCode;
+
+                ShoppingCartVM.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
+                ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusPending;
+                ShoppingCartVM.OrderHeader.ApplicationUserId = claim.Value;
+                ShoppingCartVM.OrderHeader.OrderDate = DateTime.Now;
+                ShoppingCartVM.OrderHeader.ShippingDate = DateTime.Now.AddDays(6);
+
+
+
+                _unitOfWork.OrderHeader.Add(ShoppingCartVM.OrderHeader);
+                _unitOfWork.Save();
+                //end
+
+                foreach (var item in ShoppingCartVM.ListCart)
+                {
+                    item.Price = SD.GetPriceBasedOnQuantity(item.Count, item.Product.Price,
+                        item.Product.Price50, item.Product.Price100);
+                    OrderDetails orderDetails = new OrderDetails()
+                    {
+                        ProductId = item.ProductId,
+                        OrderId = ShoppingCartVM.OrderHeader.Id,
+                        Price = item.Price,
+                        Count = item.Count
+                    };
+
+                    // ShoppingCartVM.OrderHeader.OrderTotal += orderDetails.Count * orderDetails.Price;
+                    if (item.Product.QuantityAvailable > 0)
+                        _unitOfWork.OrderDetails.Add(orderDetails);
+                    _unitOfWork.Save();
+                }
+
+
+                switch (msg)
                 {
                     case "Incorrect Account Number":
-                        {
-                            return View();
-                        }
+                        return View();
+
                     case "pswdfail":
                         return View();
                     case "Successful":
                         {
+
                             var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault
                             (c => c.Id == id, includeProperties: "Product");
 
                             var cnt = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
-                            
 
-                            var count= cart.Count;
+                            var count = cart.Count;
                             cart.Product.QuantityAvailable -= count;
-
-
-                           
-                            
-
-                            
-
+                            ShoppingCartVM.OrderHeader.OrderStatus = SD.StatusInProcess;
                             _unitOfWork.ShoppingCart.Remove(cart);
                             _unitOfWork.Save();
                             HttpContext.Session.SetInt32(SD.ssShoppingCart, 0);
-   
+
                             return View("OrderConfirmation");
                         }
                     case "Failed": return View("TransactionError");
@@ -404,37 +443,12 @@ namespace VizKartApp.Areas.Customer.Controllers
 
 
                 }
+            
 
                 //return Json(new { data = orderHeaderList });
-
-
                return View(msg);
             }
         }
 
-
-        [HttpGet]
-        public IActionResult StartProcessing(int id)
-        {
-
-
-            IEnumerable<OrderHeader> orderHeaderList;
-            if (User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee))
-            {
-                orderHeaderList = _unitOfWork.OrderHeader.GetAll(includeProperties: "ApplicationUser");
-            }
-            else
-            {
-                orderHeaderList = _unitOfWork.OrderHeader.GetAll(
-                                        u => u.Id == id,
-                                        includeProperties: "ApplicationUser");
-            }
-            OrderHeader orderHeader = _unitOfWork.OrderHeader.GetFirstOrDefault(u => u.Id == id);
-            orderHeader.PaymentStatus = SD.PaymentStatusApproved;
-            orderHeader.OrderStatus = SD.StatusInProcess;
-            _unitOfWork.Save();
-            return Json(new { data = orderHeaderList });
-            //return RedirectToAction("Index");
         }
     }
-}

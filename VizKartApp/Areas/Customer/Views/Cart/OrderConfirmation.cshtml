@@ -1,8 +1,5 @@
-﻿@*@model VizKartApp.Models.OrderDetails*@
+﻿@model VizKartApp.Models.ShoppingCart
 
-
-
-@model int
 
 
 <div class="container row">
@@ -19,9 +16,6 @@
     </div>
     <div>
         <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-primary">Back to Cart</a>
-    </div>
-    <div class="col-6 text-right">
-        <a asp-area="Customer" asp-controller="Cart" asp-action="StartProcessing" asp-route-id="@Model" class="btn btn-outline-info btn-sm">ok</a>
     </div>
 </div>
 @section Scripts{

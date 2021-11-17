@@ -91,9 +91,7 @@ namespace VizKartApp.Areas.Customer.Controllers
 
                 var count = _unitOfWork.ShoppingCart
                     .GetAll(c => c.ApplicationUserId == CartObject.ApplicationUserId)
-                    .ToList().Count();
-
-                //HttpContext.Session.SetObject(SD.ssShoppingCart, CartObject);
+                    .ToList().Count();              
                 HttpContext.Session.SetInt32(SD.ssShoppingCart, count);
 
                 return RedirectToAction(nameof(Index));
@@ -136,10 +134,7 @@ namespace VizKartApp.Areas.Customer.Controllers
             var productFromDb = _unitOfWork.Product.
                        GetAll(u => u.Title.Contains(search), includeProperties: "Category,CoverType");
             
-                return View(productFromDb);
-          
-
-
+                return View(productFromDb);       
         }
 
      

@@ -1,20 +1,4 @@
 ﻿@model IEnumerable<VizKartApp.Models.Product>
-@*<input type="text" name="search" />
-        <input type="button" value="search" name="name" />
-        <a asp-action="Search" class="btn btn-primary form-control" asp-route-id="str">searchclk</a>
-
-    <div class="olContent f1"><h2 style="color:black"></h2></div>
-    <form method="post">
-        <div class="olSearch fr">
-            <input type="text" name="search" placeholder="Search" class="inputComn form-control" />
-            <div class="searchIcon">
-                <button type="submit" class="searchBtn">
-                    <img src="~/Areas/Customer/Images/searchIcon.png" />
-                </button>
-            </div>
-        </div>
-    </form>
-*@
 
 <div class="olContent f1"><h2 style="color:black"></h2></div>
 @using (Html.BeginForm("Search", "Home", FormMethod.Get))
