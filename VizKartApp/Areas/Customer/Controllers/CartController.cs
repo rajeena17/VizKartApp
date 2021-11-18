@@ -330,7 +330,7 @@ namespace VizKartApp.Areas.Customer.Controllers
         }
 
        
-        public async Task<ActionResult> PaymentInfo(int acc,string pswd,float amt,int id,int pdtid)
+        public async Task<ActionResult> PaymentInfo(int acc,string pswd,float amt,int cartid)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -425,7 +425,7 @@ namespace VizKartApp.Areas.Customer.Controllers
                         {
 
                             var cart = _unitOfWork.ShoppingCart.GetFirstOrDefault
-                            (c => c.Id == id, includeProperties: "Product");
+                            (c => c.Id == cartid, includeProperties: "Product");
 
                             var cnt = _unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
 
@@ -438,8 +438,17 @@ namespace VizKartApp.Areas.Customer.Controllers
 
                             return View("OrderConfirmation");
                         }
-                    case "Failed": return View("TransactionError");
-                    case "Insufficient Balance": return View("InsufficientBal");
+                    case "Failed":
+                        {
+                            ShoppingCartVM.OrderHeader.OrderStatus = SD.PaymentStatusRejected;
+                            return View("TransactionError");
+
+                        }
+                    case "Insufficient Balance":
+                        {
+                            ShoppingCartVM.OrderHeader.OrderStatus = SD.PaymentStatusRejected;
+                            return View("InsufficientBal");
+                        }
 
 
                 }
