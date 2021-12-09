@@ -337,7 +337,7 @@ namespace VizKartApp.Areas.Customer.Controllers
 
 
            
-            string Baseurl = "https://localhost:44307/";
+            string Baseurl = "https://bankingapi.azurewebsites.net/";
             using (var client = new HttpClient())
             {
                 String msg = "";
